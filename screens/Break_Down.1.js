@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+ import React, { Component } from "react";
 import {
   ScrollView,
   Alert,
@@ -12,50 +12,66 @@ import {
 import { Button, Block, Input, Text } from "../components";
 import { theme } from "../constants";
 
-//const VALID_EMAIL = "olahantoli@gmail.com";
+export const getCurrentLocation = (simulator) => {
+  return async (dispatch) => {
+    if (!simulator) {
+      let { status } = await Permissions.askAsync(Permissions.LOCATION);
 
-export default class Recovery extends Component {
+      if (status !== 'granted') {
+        dispatch(gotCurrentLocationError('Permission to access location was denied'))
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      dispatch(gotCurrentLocation(location))
+    } else {
+      // Demo location for simulator
+      dispatch(gotCurrentLocation(chicagoFSA))
+    }
+  }
+}
+
+export const getNearestDivvyStation = (lat, lng) => {
+  const url = `${GOOGLE_PLACES_URL}?location=${lat},${lng}&radius=1000&type=point_of_interest&keyword=divvy&key=${API_KEY}`
+
+  return async (dispatch) => {
+    const { data } = await axios.get(url)
+//station array of locations  , find distance
+    const current = {lat, lng}
+
+    const closest = data.results.map((station) => {
+      const coord = station.geometry.location
+      return { coord, dist: geolib.getDistance(current, coord) }
+    })
+    // sort
+    .sort( (a, b) => a.dist - b.dist )[0]
+
+    dispatch(gotNearestDivvyStation(closest))
+  }
+}
+ 
+export default class Break_Down extends Component {
   
   constructor(props) {
  
     super(props)
  
     this.state = {
-      Email:'',
+ 
       plate_num: '',
       phone:'',
+      describtion:'',
+      Email:'',
       errors: [],
-      loading: false,
-      latitude: null,
-      longitude: null,   
-      latitudeDelta: 0.0922,
-     longitudeDelta: 0.0421
+      loading: false
  
     }
  
   }
 
-  componentDidMount(){
-    this.watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        this.setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          error: null,
-        });
-        global.latitudem   = this.state.latitude;
-        global.longitudem  = this.state.latitude ;
-        //this.storecoo();
-      },
-      (error) => this.setState({ error: error.message }),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 , distanceFilter: 10},
-    );
-  }
-
-  handlerecovery() {
+  handledown() {
     const { navigation } = this.props;
 
-    fetch('http://192.168.43.137/Server/recovery.php', {
+    fetch('http://192.168.43.137/Server/down.php', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -66,11 +82,10 @@ export default class Recovery extends Component {
         plate_num: this.state.plate_num,
     
         phone: this.state.phone,
-        Email: global.Email,
-        latitude: this.state.latitude,
-        longitude:this.state.longitude
-      
-
+    
+        describtion: this.state.describtion,
+        Email: global.Email
+        
     
       })
     
@@ -88,6 +103,8 @@ export default class Recovery extends Component {
           /////////////////shortest path 
           ////////////////notification
         }
+
+
   render() {
     const { navigation } = this.props;
     const { loading, errors } = this.state;
@@ -95,13 +112,14 @@ export default class Recovery extends Component {
 
     return (
       <TouchableWithoutFeedback onpress={()=>{Keyboard.dismiss}}>
-      <KeyboardAvoidingView style={styles.Recovery} behavior="padding">
+      <KeyboardAvoidingView style={styles.Break_Down} behavior="padding">
         <Block padding={[0, theme.sizes.base * 2]}>
         <ScrollView>
         <Text bold white center>
-             {"\n"} {"\n"}
+             {"\n"} 
+       
                 </Text>
-
+       
           <Text h2 bold>
           Select your vehicle by write it's plate number below
           </Text>
@@ -113,19 +131,29 @@ export default class Recovery extends Component {
               defaultValue={this.state.plate_num}
               onChangeText={plate_num => this.setState({ plate_num: plate_num })}
             />
-            <Input
+          
+              <Input
               label="Mobıle Number"
               error={hasErrors("phone")}
               style={[styles.input, hasErrors("phone")]}
               defaultValue={this.state.phone}
               onChangeText={phone => this.setState({ phone: phone })}
             />
-            
-           
-            <Text bold white center>
+            <Input
+              label=" some describtion :"
+              error={hasErrors("describtion")}
+              multiline={true}
+              maxLength={40}
+              defaultValue={this.state.describtion}
+              onChangeText={describtion => this.setState({ describtion: describtion })}
+
+            />
+             <Text bold white center>
              {"\n"} {"\n"}
                 </Text>
-            <Button gradient onPress={() => this.handlerecovery()}>
+            
+            
+            <Button gradient onPress={() => this.handledown()}>
               {loading ? (
                 <ActivityIndicator size="small" color="white" />
               ) : (
@@ -135,9 +163,10 @@ export default class Recovery extends Component {
               )}
             </Button>
 
-                  <Text bold white center>
+             <Text bold white center>
              {"\n"} {"\n"}
                 </Text>
+            
           </Block>
           </ScrollView>
         </Block>
@@ -148,7 +177,7 @@ export default class Recovery extends Component {
 }
 
 const styles = StyleSheet.create({
-  Recovery: {
+  Break_Down: {
     flex: 1,
     justifyContent: "center"
   },

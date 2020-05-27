@@ -9,6 +9,7 @@ import SignUp from "../screens/SignUp";
 import Forgot from "../screens/Forgot";
 import Home from "../screens/Home";
 import Sallikna from "../screens/Sallikna";
+import CALL from "../screens/CALL";
 //import Profile from "../screens/Profile";
 //import Settings from "../screens/Settings";
 
@@ -21,7 +22,8 @@ const screens = createStackNavigator(
     SignUp,
     Forgot,
     Home,
-    Sallikna //,
+    Sallikna ,
+    CALL
     //Profile
     
     //Settings
@@ -35,7 +37,7 @@ const screens = createStackNavigator(
         elevation: 0 // for android
       },
      
-      headerBackImage:()=> <Image source={require("../assets/icons/back.png")} />,
+      headerBackImage:()=> <Image source={require("../assets/icons/pp.jpg")} />,
       headerBackTitle: null ,
       headerLeftContainerStyle: {
       

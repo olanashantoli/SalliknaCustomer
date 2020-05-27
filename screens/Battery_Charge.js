@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import {
+  ScrollView,
   Alert,
   ActivityIndicator,
   Keyboard,
@@ -10,9 +11,11 @@ import {
 
 import { Button, Block, Input, Text } from "../components";
 import { theme } from "../constants";
-
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 //const VALID_EMAIL = "olahantoli@gmail.com";
-
+const tokennn='';
 export default class Battery_Charge extends Component {
   
   constructor(props) {
@@ -24,15 +27,83 @@ export default class Battery_Charge extends Component {
       plate_num: '',
       Email:'',
       errors: [],
-      loading: false
+      loading: false,
+
+      error: null,
+      latitude: null,
+      longitude: null,   
+      latitudeDelta: 0.0922,
+     longitudeDelta: 0.0421,
+
+     notification: {},
  
     }
  
   }
+
   
-  handleCharge() {
-    const { navigation } = this.props;
-    fetch('http://192.168.43.137/Server/charge.php', {
+  sendPushNotification = async () => {
+    const message = {
+      to: tokennn,//ETOKEN
+      sound: 'default',
+      title: 'ACCEPTED ',
+      body: 'just wait!',
+      data: { data: 'goes here' },
+      _displayInForeground: true,
+    };
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  };
+
+  gettok(){
+    fetch('http://192.168.43.137/Server/tok2.php', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+       email: global.Email,
+       ID : 'olawalaa@gmail.com',
+      
+      })
+     
+    }).then((response) => response.json())
+          .then((responseJson) => {
+    
+            this.setState({
+         
+              isLoading: false,
+              tokennn: responseJson,
+             // t:responseJson
+            }, function() {
+              // In this block you can do something with new state.
+            });
+            console.log("ooooooooooooooooooooo");
+       console.log(tokennn ,'ghfgjf');
+         }).catch((error) => {
+           Alert.alert(
+             "Error in json",
+             "Please check you Email address.",
+             [{ text: "Try again" }],
+             { cancelable: false }
+           );
+           console.error(error);
+         }); 
+  }
+
+  provider(){
+
+  }
+  fun() {
+    fetch('http://192.168.43.137/Server/fun.php', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -40,10 +111,11 @@ export default class Battery_Charge extends Component {
       },
       body: JSON.stringify({
     
-        plate_num: this.state.plate_num,
-        Email: global.Email
-        
-       
+     
+        Email: global.Email,
+        latitude: this.state.latitude,
+        longitude:this.state.longitude
+      
     
       })
     
@@ -61,7 +133,69 @@ export default class Battery_Charge extends Component {
           ////////////////notification
   }
 
+/* componentWillUnmount() {
+    navigator.geolocation.clearWatch(this.watchId);
+  } */
+
+  componentDidMount(){
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+        global.latitudem   = this.state.latitude;
+        global.longitudem  = this.state.latitude ;
+        //this.storecoo();
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 , distanceFilter: 10},
+    );
+  }
+
+  handleCharge() {
+
+    
+   
+    const { navigation } = this.props;
+    fetch('http://192.168.43.137/Server/charge.php', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+    
+        plate_num: this.state.plate_num,
+        Email: global.Email,
+        latitude: this.state.latitude,
+        longitude:this.state.longitude
+       
+    
+      })
+    
+    }).then((response) => response.json())
+          .then((responseJson) => {
+    
+    // Showing response message coming from server after inserting records.
+            Alert.alert(responseJson);
+    
+          }).catch((error) => {
+            console.error(error);
+          });
+//this.fun();
+          /////////////////shortest path 
+        //  this.provider();
+          ////////////////notification
+
+          this.gettok();//add ID
+          this.sendPushNotification();
+
+  }
+
   render() {
+   
     const { navigation } = this.props;
     const { loading, errors } = this.state;
     const hasErrors = key => (errors.includes(key) ? styles.hasErrors : null);
@@ -70,6 +204,7 @@ export default class Battery_Charge extends Component {
       <TouchableWithoutFeedback onpress={()=>{Keyboard.dismiss}}>
       <KeyboardAvoidingView style={styles.Battery_Charge} behavior="padding">
         <Block padding={[0, theme.sizes.base * 2]}>
+        <ScrollView>
         <Text bold white center>
              {"\n"} 
        
@@ -102,6 +237,7 @@ export default class Battery_Charge extends Component {
 
            
           </Block>
+          </ScrollView>
         </Block>
       </KeyboardAvoidingView>
       </TouchableWithoutFeedback>

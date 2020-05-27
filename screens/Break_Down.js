@@ -26,13 +26,37 @@ export default class Break_Down extends Component {
       describtion:'',
       Email:'',
       errors: [],
-      loading: false
+      loading: false,
+      latitude: null,
+      longitude: null,   
+      latitudeDelta: 0.0922,
+     longitudeDelta: 0.0421
  
     }
  
   }
 
+  componentDidMount(){
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+        global.latitudem   = this.state.latitude;
+        global.longitudem  = this.state.latitude ;
+        //this.storecoo();
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 , distanceFilter: 10},
+    );
+  }
+
   handledown() {
+   
+
+
     const { navigation } = this.props;
 
     fetch('http://192.168.43.137/Server/down.php', {
@@ -48,7 +72,10 @@ export default class Break_Down extends Component {
         phone: this.state.phone,
     
         describtion: this.state.describtion,
-        Email: global.Email
+        Email: global.Email,
+        latitude: this.state.latitude,
+        longitude:this.state.longitude
+       
         
     
       })
@@ -104,7 +131,7 @@ export default class Break_Down extends Component {
               onChangeText={phone => this.setState({ phone: phone })}
             />
             <Input
-              label=" some describtion :"
+              label=" some description :"
               error={hasErrors("describtion")}
               multiline={true}
               maxLength={40}

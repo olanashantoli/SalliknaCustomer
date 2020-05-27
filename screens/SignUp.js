@@ -13,7 +13,9 @@ import { Button, Block, Input, Text } from "../components";
 import { theme } from "../constants";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
-
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 
 export default class SignUp extends Component {
   constructor(props) {
@@ -29,13 +31,57 @@ export default class SignUp extends Component {
       confirm_password: '',
     
       errors: [],
-      loading: false
+      loading: false,
+      expoPushToken: '',
+    notification: {},
+  
  
     }
  
   }
 
- 
+  registerForPushNotificationsAsync = async () => {
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = await Notifications.getExpoPushTokenAsync();
+      
+      this.setState({ expoPushToken: token });
+      console.log(token);
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.createChannelAndroidAsync('default', {
+        name: 'default',
+        sound: true,
+        priority: 'max',
+        vibrate: [0, 250, 250, 250],
+      });
+    }
+  };
+
+  componentDidMount() {
+    this.registerForPushNotificationsAsync();
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
+
+   
+  }
+
+  _handleNotification = notification => {
+    Vibration.vibrate();
+    console.log(notification);
+    this.setState({ notification: notification });
+  };
  
   handleSignUp() {
      const { username }  = this.state ;
@@ -43,6 +89,8 @@ export default class SignUp extends Component {
     const { email }  = this.state ;
     const {password }  = this.state ;
     const { confirm_password }  = this.state ;
+
+      const { expoPushToken }  = this.state ;
   
         global.UserName=username;/////////////////////////////////
       global.Phone=mobile_phone;
@@ -63,7 +111,8 @@ export default class SignUp extends Component {
     
         password:password,
 
-        phone:mobile_phone
+        phone:mobile_phone,
+        TOK : expoPushToken
     
       })
     

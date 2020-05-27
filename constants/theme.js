@@ -6,7 +6,8 @@ const colors = {
   black: "#323643",
   white: "#FFFFFF",
   gray: "#9DA3B4",
-  gray2: "#8875ba"
+  gray2: "#8875ba",
+  pink:"#FF0000"
 };
 
 const sizes = {

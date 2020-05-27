@@ -18,6 +18,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 
 //Import all the screens for Drawer/ Sidebar
 import Home from './Home';
+import CALL from './CALL';
 import Join_our_team from './Join_our_team';
 import Profile from './Profile';
 import Manage_vehicle from './Manage_vehicle';
@@ -57,7 +58,7 @@ const FirstActivity_StackNavigator = createStackNavigator({
     screen: Home,
     navigationOptions: ({ navigation }) => ({
       title: 'Home',
-      headerLeft: <NavigationDrawerStructure navigationProps={navigation} />,
+      headerLeft: () => <NavigationDrawerStructure navigationProps={navigation} />,
       headerStyle: {
         height: theme.sizes.base * 5,
         backgroundColor: '#8875ba',
@@ -76,7 +77,7 @@ const Screen2_StackNavigator = createStackNavigator({
     screen: Services,
     navigationOptions: ({ navigation }) => ({
       title: 'Services',
-      headerLeft: <NavigationDrawerStructure navigationProps={navigation} />,
+      headerLeft:() => <NavigationDrawerStructure navigationProps={navigation} />,
 
       headerStyle: {
         height: theme.sizes.base * 5,
@@ -95,7 +96,7 @@ const Screen3_StackNavigator = createStackNavigator({
     screen: Manage_vehicle,
     navigationOptions: ({ navigation }) => ({
       title: 'Manage vehicle',
-      headerLeft: <NavigationDrawerStructure navigationProps={navigation} />,
+      headerLeft: () => <NavigationDrawerStructure navigationProps={navigation} />,
       headerStyle: {
         height: theme.sizes.base * 5,
         backgroundColor: '#8875ba',
@@ -111,7 +112,7 @@ const Screen4_StackNavigator = createStackNavigator({
     screen: Profile,
     navigationOptions: ({ navigation }) => ({
       title: 'Profile',
-      headerLeft: <NavigationDrawerStructure navigationProps={navigation} />,
+      headerLeft: () => <NavigationDrawerStructure navigationProps={navigation} />,
       headerStyle: {
         height: theme.sizes.base * 5,
         backgroundColor: '#8875ba',
@@ -126,7 +127,23 @@ const Screen5_StackNavigator = createStackNavigator({
     screen: Join_our_team,
     navigationOptions: ({ navigation }) => ({
       title: 'Join our team',
-      headerLeft: <NavigationDrawerStructure navigationProps={navigation} />,
+      headerLeft:  () => <NavigationDrawerStructure navigationProps={navigation} />,
+      headerStyle: {
+        height: theme.sizes.base * 5,
+        backgroundColor: '#8875ba',
+      },
+      headerTintColor: '#fff',
+    }),
+  },
+});
+
+const Screen8_StackNavigator = createStackNavigator({
+  //All the screen from the Screen3 will be indexed here
+  Fiveth: {
+    screen: CALL,
+    navigationOptions: ({ navigation }) => ({
+      title: 'Emergency Call',
+      headerLeft:  () => <NavigationDrawerStructure navigationProps={navigation} />,
       headerStyle: {
         height: theme.sizes.base * 5,
         backgroundColor: '#8875ba',
@@ -142,7 +159,7 @@ const Screen5_StackNavigator = createStackNavigator({
     screen: Logout,
     navigationOptions: ({ navigation }) => ({
       title: 'Logout',
-      headerLeft: <NavigationDrawerStructure navigationProps={navigation} />,
+      headerLeft: () => <NavigationDrawerStructure navigationProps={navigation} />,
       headerStyle: {
         height: theme.sizes.base * 5,
         backgroundColor: '#8875ba',
@@ -151,7 +168,7 @@ const Screen5_StackNavigator = createStackNavigator({
     }),
   },
 }); 
- 
+
 //Drawer Navigator for the Navigation Drawer / Sidebar
 const DrawerNavigatorExample = createDrawerNavigator({
   //Drawer Optons and indexing
@@ -191,6 +208,13 @@ const DrawerNavigatorExample = createDrawerNavigator({
     screen: Screen5_StackNavigator,
     navigationOptions: {
       drawerLabel: 'Join our team',
+    },
+  },
+  CALL: {
+    //Title
+    screen: Screen8_StackNavigator,
+    navigationOptions: {
+      drawerLabel: 'Emergency Call',
     },
   },
   Logout: {

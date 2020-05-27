@@ -92,7 +92,7 @@ class Welcome extends Component {
             <Text h1  style={styles.red}>
               {"  \n"}
               Sallikna
-               {"\n"}
+       
             </Text>
           </Text>
          
@@ -112,9 +112,9 @@ class Welcome extends Component {
               Signup
             </Text>
           </Button>
-          <Button shadow onPress={() => navigation.navigate("CALL")}>
-            <Text center red>
-              Ecall
+          <Button gray onPress={() => navigation.navigate("CALL")}>
+            <Text center semibold pink style={{ textDecorationLine: "underline" }}>
+           * Emergency Call *
             </Text>
           </Button>
      

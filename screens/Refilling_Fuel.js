@@ -27,10 +27,31 @@ export default class Refilling_Fuel extends Component {
       num:'',
       Email:'',
       errors: [],
-      loading: false
+      loading: false,
+      latitude: null,
+      longitude: null,   
+      latitudeDelta: 0.0922,
+     longitudeDelta: 0.0421
  
     }
  
+  }
+
+  componentDidMount(){
+    this.watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+        global.latitudem   = this.state.latitude;
+        global.longitudem  = this.state.latitude ;
+        //this.storecoo();
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 , distanceFilter: 10},
+    );
   }
 
   handlefuel() {
@@ -49,8 +70,10 @@ export default class Refilling_Fuel extends Component {
         PickerValue: this.state.PickerValue,
     
         num: this.state.num,
-        Email: global.Email
-    
+        Email: global.Email,
+        latitude: this.state.latitude,
+        longitude:this.state.longitude
+       
       })
     
     }).then((response) => response.json())
@@ -114,7 +137,8 @@ export default class Refilling_Fuel extends Component {
       */}
 
         <Input
-              label=" how much liter you need "
+              label=" 
+              How many liters do you need ? "
               error={hasErrors("num")}
               style={[styles.input, hasErrors("num")]}
               defaultValue={this.state.num}
@@ -126,9 +150,9 @@ export default class Refilling_Fuel extends Component {
 		selectedValue={this.state.PickerValue}
 		onValueChange={(itemValue,itemIndex) => this.setState({PickerValue:itemValue})}
 		>
-		<Picker.Item label="Select a type" value=""/>
-		<Picker.Item label="solar" value="solar" />
-		<Picker.Item label="dessel" value="dessel"/>
+		<Picker.Item label="Select fuel type  " value=""/>
+		<Picker.Item label="* solar" value="solar" />
+		<Picker.Item label="* dessel" value="dessel"/>
 		</Picker>
 
 

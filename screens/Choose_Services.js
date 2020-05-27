@@ -52,7 +52,7 @@ export default class Choose_Services extends Component {
                   <ActivityIndicator size="small" color="white" />
                 ) : (
                   <Text bold white center>
-                    Battery_Charge
+                    Battery Charge
                   </Text>
                 )}
               </Button>
@@ -63,7 +63,7 @@ export default class Choose_Services extends Component {
                   <ActivityIndicator size="small" color="white" />
                 ) : (
                   <Text bold white center>
-                    Break_Down
+                    Break Down
                   </Text>
                 )}
               </Button>
@@ -78,6 +78,15 @@ export default class Choose_Services extends Component {
                 )}
               </Button>
 
+               <Button gradient onPress={() => navigation.navigate("Refilling_Fuel")}>
+                {loading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text bold white center>
+                    Refilling Fule
+                  </Text>
+                )}
+              </Button>
                <Button gradient onPress={() => navigation.navigate("RepairingAndChangingTyre")}>
                 {loading ? (
                   <ActivityIndicator size="small" color="white" />
@@ -88,15 +97,6 @@ export default class Choose_Services extends Component {
                 )}
               </Button>
 
-               <Button gradient onPress={() => navigation.navigate("Refilling_Fuel")}>
-                {loading ? (
-                  <ActivityIndicator size="small" color="white" />
-                ) : (
-                  <Text bold white center>
-                    Refilling_Fule
-                  </Text>
-                )}
-              </Button>
               <Text bold white center>
              {"\n"} {"\n"}
                 </Text>

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect,Component } from "react";
 import {
   Alert,
   ActivityIndicator,
@@ -7,16 +7,20 @@ import {
   StyleSheet ,
   TouchableWithoutFeedback,
   ScrollView,
-  AsyncStorage
+  AsyncStorage,
+  Vibration
 } from "react-native";
 
 import { Button, Block, Input, Text } from "../components";
 import { theme } from "../constants";
-
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 //const VALID_EMAIL = "olahantoli@gmail.com";
 //const VALID_PASSWORD = "ola123";
 
 export default class Login extends Component {
+  
   /* state = {
     email:'' ,
     password: '',
@@ -29,17 +33,55 @@ export default class Login extends Component {
   }; */
   
   constructor(props){
+   
     super(props);
     
     this.state={email:'', password:'', errors: [],
-    isLoading: true};
+    isLoading: true,
+    expoPushToken: '',
+    notification: {},
+  
+  };
     
   }
 
-  handleLogin () {
 
+ 
+ 
+
+ 
+
+/*   sendPushNotification = async () => {
+    const message = {
+      to: this.state.expoPushToken,
+      sound: 'default',
+      title: 'Original Title',
+      body: 'And here is the body!',
+      data: { data: 'goes here' },
+      _displayInForeground: true,
+    };
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+  };
+ */
+
+
+
+  handleLogin () {
+    
+
+   // this.sendPushNotification();
     const { email }  = this.state ;
     const {password }  = this.state ;
+    
+    
     global.Email=email;
    fetch('http://192.168.43.137/Server/User_Login.php', {
      method: 'POST',
@@ -51,7 +93,8 @@ export default class Login extends Component {
     
        email: email,
     
-       password: password
+       password: password,
+    
     
      })
     
@@ -75,7 +118,7 @@ export default class Login extends Component {
          }).catch((error) => {
            console.error(error);
          });
-    
+   // this.handleToken();
      }
 
   render() {
@@ -134,7 +177,7 @@ export default class Login extends Component {
               )}
             </Button>
 
-            <Button onPress={() => navigation.navigate("Forgot")}>
+          {/*   <Button onPress={() => navigation.navigate("Forgot")}>
               <Text
                 gray
                 caption
@@ -143,7 +186,7 @@ export default class Login extends Component {
               >
                 Forgot your password?
               </Text>
-            </Button>
+            </Button> */}
             
          
             </ScrollView>
