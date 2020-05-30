@@ -13,17 +13,10 @@ import {NavigationEvents} from 'react-navigation';
 export default class Home extends Component  {
   constructor(props) {
     super(props);
-    this.onRegionChange=this.onRegionChange.bind(this);
-    this.deg2Rad=this.deg2Rad.bind(this);
-    this.pythagorasEquirectangular =this.pythagorasEquirectangular.bind(this);
-    this.NearestCity=this.NearestCity.bind(this);
-    this.retrieveData=this.retrieveData.bind(this);
+   
     this.state = {
       Email:'',
-        clinicNames:[],
-        clinicName:'',
-        clinics:[],
-        nodata:false,//////////edited
+       
         latitude:'',
         longitude:'',
 
@@ -34,39 +27,14 @@ export default class Home extends Component  {
        longitude: 35.1901304,   
        latitudeDelta: 0.0922,
       longitudeDelta: 0.0421
-       }
+       },
+       dataSource:[],
     };
   }
   
-  onRegionChange(region){
-    this.setState({ region:region });
-  }	
-
-  
-  deg2Rad (deg) {
-    return deg * Math.PI / 180;
-  }
-  
-  
-pythagorasEquirectangular = (lat1, lon1, lat2, lon2) => {
-  lat1 = Deg2Rad(lat1);
-  lat2 = Deg2Rad(lat2);
-  lon1 = Deg2Rad(lon1);
-  lon2 = Deg2Rad(lon2);
-  var R = 6371; // km
-  var x = (lon2 - lon1) * Math.cos((lat1 + lat2) / 2);
-  var y = (lat2 - lat1);
-  var d = Math.sqrt(x * x + y * y) * R;
-  return d;
-}
-
-NearestCity(latitude, longitude) {
- 
-}
-
-   componentDidMount() {
+componentDidMount() {
     //const { done }  ;
-    this.retrieveData();
+
 
     this.watchId = navigator.geolocation.watchPosition(
       (position) => {
@@ -83,38 +51,37 @@ NearestCity(latitude, longitude) {
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 , distanceFilter: 10},
     );
    
-    return fetch('http://192.168.43.137/Server/Home-Cus.php', {
+     return fetch('http://192.168.43.137/Server/allsh.php', {
       method: 'POST',
        headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       }, 
       body: JSON.stringify({
-    
-     ///   name: this.state.username,
-        email: global.Email,
-        latitude: this.state.latitude,
-        longitude:this.state.longitude
-       // Done :  global.Done,
-    
-     ////   password: this.state.password 
+       // Email: global.Email,
+
     
       })
     
-    })
-      .then((response) => response.json())
+    }).then((response) => response.json())
       .then((responseJson) => {
-        this.setState({
+       // console.log(responseJson);
+        console.log(   responseJson);
          
+console.log('hi');
+        this.setState({
+            
           isLoading: false,
           dataSource: responseJson
-        }, function() {
+        },function() {
+               
           // In this block you can do something with new state.
         });
+       // console.log(  this.state.dataSource[1].lat);   
       })
       .catch((error) => {
         console.error(error);
-      });
+      }); 
       
   }
  
@@ -123,24 +90,22 @@ NearestCity(latitude, longitude) {
 componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watchId);
   }
+  guid() {
+    return this.s4() + this.s4() + '-' + this.s4() + '-' + this.s4() + '-' +
+        this.s4() + '-' + this.s4() + this.s4() + this.s4();
+}
 
-retrieveData(){
-  const { navigation } = this.props;  
-
-  this.setState({
-    Email:global.Email,
-  });
-
-
-
-
+s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
 }
 
   render() {
   
     //var y = global.LNG;
  
-
+    
   
     return (
 
@@ -189,10 +154,32 @@ retrieveData(){
     showsTraffic={true}
     showsIndoors={true}
     initialRegion={this.state.region}
+
     
     >
+    
+  { this.state.dataSource.map((item)  => ( //key
+    <Marker key={this.guid()}
+      pinColor = {"purple"} 
+      coordinate={{latitude:parseFloat(item.lat),longitude:parseFloat(item.lng)}}  //string
+      title={item.CompanyName}
+      description={"for "+item.VehiclesType+" Vehicles   Phone :"+ item.Phone}
+      
+    />
   
-         <Marker coordinate = {{latitude : 32.455 ,longitude:35.3}}
+  ))
+  
+  }
+
+ 
+   </MapView>  
+        </View> 
+    
+    );
+  }
+}
+  /* 
+         <Marker coordinate = {{latitude : 23 ,longitude:35.3}}
          pinColor = {"purple"} // any color
          title={"company x"}
          description={"BMW company"}/> 
@@ -230,15 +217,15 @@ retrieveData(){
           <Marker coordinate = {{latitude : 32.4 ,longitude:35.35}}
          pinColor = {"purple"} // any color
          title={"car workshop44"}
-         description={"for all vehicles"}/> 
+         description={"for all vehicles"}/>  */
  
-    </MapView>  
-     {/*  <Text>Latitude: {this.state.latitude}</Text>
+ /*  </MapView>  
+       <Text>Latitude: {this.state.latitude}</Text>
         <Text>Longitude: {this.state.longitude}</Text> 
         
-    {this.state.error ? <Text>Error: {this.state.error}</Text> : null}  */}
+    {this.state.error ? <Text>Error: {this.state.error}</Text> : null}  */
  
- {/* <MapView style={styles.map}
+ /* <MapView style={styles.map}
           initialRegion={{
               latitude: 37.78825,
               longitude: -122.4324,
@@ -252,13 +239,13 @@ retrieveData(){
             title={"title"}
             description={"description"}
          />
-      </MapView> */}
+      </MapView> */
    
 
   
 
 
-{/*         {!this.state.nodata && this.state.dataSource.map((marker) => {
+/*         {!this.state.nodata && this.state.dataSource.map((marker) => {
       return(
         <MapView.Marker
       coordinate={{
@@ -271,13 +258,9 @@ retrieveData(){
     />
       )
     
-  })} */}
+  })} */
 
-      </View> 
-    
-    );
-  }
-}
+ 
 
 //end get current location
 

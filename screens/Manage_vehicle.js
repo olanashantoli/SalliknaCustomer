@@ -43,7 +43,7 @@ const Manage_vehicle = createStackNavigator({
   TabScreen: {
     screen: TabScreen,
     navigationOptions: {
-      header: null,
+      headerShown: false,
     },
   },
 });

@@ -72,7 +72,7 @@
 
        ourprovider(){
         const args = {
-            number: '0598304695', // String value with the number to call
+            number: '042507723', // String value with the number to call
             prompt: true // Optional boolean property. Determines if the user should be prompt prior to the call 
         }
        call(args).catch(console.error)
