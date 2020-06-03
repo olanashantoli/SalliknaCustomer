@@ -39,6 +39,8 @@ export default class Battery_Charge extends Component {
      x:'',
      ServiceType:'Battery Charge',
      OrderType:'Battery_Charge',
+     second: 0,
+     c:0
     }
  
   }
@@ -60,7 +62,7 @@ s4() {
 
 
 ///////////////////////////////////
-  sendPushNotification = async () => {
+/*   sendPushNotification = async () => {
     const message = {
       to: ExponentPushToken[IzV5TuA8Y0D4tDJPC1EvCG],//ETOKEN
       sound: 'default',
@@ -79,7 +81,7 @@ s4() {
       body: JSON.stringify(message),
     });
   };
-
+ */
   gettok(){
     fetch('http://192.168.43.137/Server/tok2.php', {
       method: 'POST',
@@ -119,6 +121,55 @@ s4() {
 
 
 
+  check(){
+    
+    console.log("chekkk");
+    fetch('http://192.168.43.137/Server/check.php', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+  
+        plate_num: this.state.plate_num,
+        Email: global.Email,
+        latitude: this.state.latitude,
+        longitude:this.state.longitude,
+        OrderType: this.state.OrderType,
+    
+      })
+    
+    }).then((response) => response.json())
+          .then((responseJson) => {
+            if(responseJson === 'repeat')
+           {
+           this.setState.c= (this.state.c) ++;
+           console.log(this.state.c);
+            this.fun();
+               //Then open Profile activity and send user email to profile activity.
+              // this.props.navigation.navigate('Second', { email: email });
+             // this.props.navigation.navigate("Sallikna" ,{Email: email});
+           //   Alert.alert(responseJson+'Find next');
+           }
+           else if (responseJson === 'Company still not accept or deny the requet'){
+            console.log(" stillll");
+             
+            
+           }
+           else{
+            Alert.alert(responseJson);
+           }
+    
+          }).catch((error) => {
+            console.error(error);
+          });
+  
+
+
+  }
+
+
 storeprovider(){
 
   console.log("ssssssssssssss");
@@ -150,20 +201,42 @@ storeprovider(){
                            // In this block you can do something with new state.
           });
           console.log("ddddddddddddddd");
+          
+  var i = 15000;//20sec
+  while(i){
+ i--;
+ console.log("lop");
+  }  
+ 
       
-       
+          this.check();
   // Showing response message coming from server after inserting records.
          // Alert.alert(responseJson);
-  
-        }).catch((error) => {
+        // Alert.alert("please wait untill we found the nearest available company ");
+        })
+        
+        .catch((error) => {
           console.error(error);
         });
+
+/*         this.onStart;
+        _interval: any;
+onStart = () => {
+     this._interval = setInterval(() => {
+      this.setState({
+        second: this.state.second + 1,
+     })
+  }, 1000);
+}
+}
+ */
+
 
 }
 
  
- 
   shortest(){
+
    console.log("bbbbbbbbbbbbb");
     console.log("111111111111111111");
     var lan=[];
@@ -176,6 +249,7 @@ storeprovider(){
     var output=[];
     var lowestDis;
     var key;
+    
     for (i = 0; i < this.state.dataSource.length; i++) {
     { this.state.dataSource.map((item,i ) => ( //key
       key=this.guid(),
@@ -217,7 +291,7 @@ storeprovider(){
  
  /////////////////////////////////////////// save the index of the lowest value to get the email value and it stored in EMArr[index]
    var index = 0;
-   var value = output[0];
+   var value = output[this.state.c];
    for (var i = 0; i < temp.length; i++) {
        if (temp[i] ==value) {
            index = i;
@@ -227,7 +301,7 @@ storeprovider(){
 this.state.provider=EMArr[index];
    
     console.log(this.state.provider);
-
+    //c++;
      this.storeprovider();
   }
 
@@ -237,6 +311,7 @@ this.state.provider=EMArr[index];
   fun() {
 
     console.log("ssssssssssssss");
+    
     fetch('http://192.168.43.137/Server/funnn.php', {
       method: 'POST',
       headers: {
@@ -333,8 +408,10 @@ this.state.provider=EMArr[index];
                 //Then open Profile activity and send user email to profile activity.
                // this.props.navigation.navigate('Second', { email: email });
                this.fun();
-               Alert.alert(responseJson);
+               Alert.alert(responseJson+" , Please Wait a minute");
     
+
+
             }
             else{
     
